@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-folks [id] [property] [property=value]
+folks.py [id] [property] [property=value]
 
 A simple CLI address book with backend stored in an .ini-file
 (default ~/folks.ini).
@@ -8,25 +8,25 @@ A simple CLI address book with backend stored in an .ini-file
 USAGE
     folks is intented to be grep-, sed-, columns-, cut- and awk-friendly:
 
-    folks
+    ./folks.py
         # output:
         sven
         rocker
         nisse
 
-    folks sven
+    ./folks.py sven
         # output:
         name:Sven Larsson
         tele:+4670677151
         email:sven@larsson.com
 
-    ./folks martin | grep phone | cut -d: -f2 # output: +46462462446
+    ./folks.py martin | grep phone | cut -d: -f2 # output: +46462462446
         # shortcut, if you don't like grep:
-    folks sven tele
+    ./folks.py sven tele
         # output:
         +4670677151
 
-    ./folks sven tel=325236266 email=sven@email.com # sets properties
+    ./folks.py sven tel=325236266 email=sven@email.com # sets properties
 
 
     If you need more import channels than stdin, edit the text file. I'm
