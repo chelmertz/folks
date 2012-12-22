@@ -50,6 +50,7 @@ import sys
 import ConfigParser
 import inspect
 import os
+import difflib
 
 file = os.path.expanduser(file)
 config = ConfigParser.ConfigParser()
@@ -65,7 +66,7 @@ def get(nick, option=None):
         print "%s:%s" % (x, y.strip("\"'"))
 
 def list():
-    print "\n".join(config.sections())
+    return config.sections()
 
 def set(nick, key, value, write=True):
     try:
@@ -83,13 +84,16 @@ def usage(exit_code=0):
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        list()
+        print "\n".join(list())
         sys.exit()
     if any([i in sys.argv for i in ("help", "-h", "--help")]):
         usage(0)
     nick = sys.argv[1]
     if not config.has_section(nick) and "=" not in ''.join(sys.argv):
-        print "%s doesn't exist yet, add with %s luke --name=\"Luke S. Walker\"" % (nick, sys.argv[0])
+        print "%s doesn't exist yet, add with %s luke name=\"Luke S. Walker\"" % (nick, sys.argv[0])
+        close = difflib.get_close_matches(nick, list(), 3)
+        if close:
+            print "Almost what you searched for:\n - %s" % "\n - ".join(close)
         sys.exit(1)
     args = sys.argv[2:]
     if not len(args):
