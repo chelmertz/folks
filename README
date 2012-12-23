@@ -6,26 +6,35 @@ A simple CLI address book with backend stored in an .ini-file
 USAGE
     folks is intented to be grep-, sed-, columns-, cut- and awk-friendly:
 
+    # list all id's
     ./folks.py
         # output:
         sven
         rocker
         nisse
 
+    # list properties of given id
     ./folks.py sven
         # output:
         name:Sven Larsson
         tele:+4670677151
         email:sven@larsson.com
 
+    # get some options of an id
     ./folks.py martin | grep phone | cut -d: -f2 # output: +46462462446
         # shortcut, if you don't like grep:
     ./folks.py sven tele
         # output:
         +4670677151
 
-    ./folks.py sven tel=325236266 email=sven@email.com # sets properties
+    # sets properties
+    ./folks.py sven tel=325236266 email=sven@email.com
 
+    # search (and limit output to certain properties if you want to)
+    ./folks.py --footballers=1 tele
+        # output:
+        sven:tele:0703453455
+        martin:tele:070143151
 
     If you need more import channels than stdin, edit the text file. I'm
     just a frontend.
