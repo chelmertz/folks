@@ -32,6 +32,12 @@ USAGE
     # sets properties
     ./folks.py sven tel=325236266 email=sven@email.com
 
+    # search (and limit output to certain properties if you want to)
+    ./folks.py --footballers=1 tele
+        # output:
+        sven:tele:0703453455
+        martin:tele:070143151
+
     If you need more import channels than stdin, edit the text file. I'm
     just a frontend.
 
@@ -51,6 +57,7 @@ import ConfigParser
 import inspect
 import os
 import difflib
+import re
 
 file = os.path.expanduser(file)
 config = ConfigParser.ConfigParser()
@@ -82,6 +89,19 @@ def usage(exit_code=0):
     print inspect.getdoc(sys.modules[__name__])
     sys.exit(exit_code)
 
+def search(filters, properties=None):
+    hits = []
+    for nick in config.sections():
+        for prop in filters:
+            if config.has_option(nick, prop) and filters[prop].lower() in config.get(nick, prop).lower():
+                if properties and prop in properties:
+                    hits.append({nick: (prop, config.get(nick, prop))})
+                elif not properties and nick not in hits:
+                    for propset in config.items(nick):
+                        hits.append({nick: propset})
+    return hits
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print "\n".join(list())
@@ -93,29 +113,31 @@ if __name__ == "__main__":
         print "%s doesn't exist yet, add with %s luke name=\"Luke S. Walker\"" % (nick, sys.argv[0])
         close = difflib.get_close_matches(nick, list(), 3)
         if close:
-            print "Almost what you searched for:\n - %s" % "\n - ".join(close)
+            print "\nAlmost what you searched for:\n%s" % "\n".join(close)
         sys.exit(1)
-    args = sys.argv[2:]
-    if not len(args):
+    args = sys.argv[1:]
+    if len(args) == 1 and "=" not in ''.join(args):
         get(nick)
         sys.exit()
+    filters = {}
+    properties = []
     for arg in args:
-        if "=" in arg:
+        matches = re.search("--([^=]+)=(.*)", arg)
+        if matches:
+            filters[matches.group(1)] = matches.group(2)
+        elif "=" in arg:
             set(nick, arg.split("=")[0], arg.split("=")[1])
         else:
             # ok, you're too lazy to use grep. let me help you
-            get(nick, arg)
-
+            properties.append(arg)
+    if filters:
+        matches = search(filters, properties)
+        if not matches:
+            print "No entries contained given filters"
+            sys.exit()
+        for m in matches:
+            for b in m:
+                print "%s:%s:%s" % (b, m[b][0], m[b][1])
 
 # @todo make sure it makes sense to import this into another python module
-# @todo add a filter function, like --name=sven which is a case
-# insensitive reduce
-    #folks --email=gmail
-        ## output:
-        #rocker:johnyboy@gmail.com
-        #nisse:nils@gmail.com
-
-    #./folks --beachvolley=1 tel
-        ## output
-        #sven:+4670677151
 # @todo tests
