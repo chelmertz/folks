@@ -101,8 +101,7 @@ def search(filters, properties=None):
                         hits.append({nick: propset})
     return hits
 
-
-if __name__ == "__main__":
+def main():
     if len(sys.argv) == 1:
         print "\n".join(list())
         sys.exit()
@@ -138,6 +137,9 @@ if __name__ == "__main__":
         for m in matches:
             for b in m:
                 print "%s:%s:%s" % (b, m[b][0], m[b][1])
+
+if __name__ == "__main__":
+    main()
 
 # @todo make sure it makes sense to import this into another python module
 # @todo tests
