@@ -8,6 +8,6 @@ release: README clean
 	python setup.py sdist
 
 upload: release
-	python setup.py release sdist upload
+	python setup.py sdist upload
 
 .PHONY: release upload clean
